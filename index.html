@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaxiRechner | AgrarJulian</title>
+    <style>
+        :root {
+            --taxi-yellow: #ffcc00;
+            --taxi-black: #121212;
+            --taxi-dark-gray: #1e1e1e;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--taxi-black);
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--taxi-dark-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 1px solid #333;
+        }
+
+        /* Header Bereich */
+        .header-bar {
+            background-color: var(--taxi-yellow);
+            color: var(--text-dark);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header-bar h1 {
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .user-tag {
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--taxi-yellow);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .checkbox-container {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 12px;
+        }
+
+        /* RECHNUNGS-VORSCHAU */
+        #invoice {
+            margin-top: 30px;
+            background: white;
+            color: black;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .invoice-head {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 3px solid var(--taxi-yellow);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th {
+            text-align: left;
+            border-bottom: 2px solid #eee;
+            padding: 10px;
+        }
+
+        .invoice-table td {
+            padding: 10px;
+            border-bottom: 1px solid #f4f4f4;
+        }
+
+        .total-box {
+            margin-top: 20px;
+            background: var(--taxi-yellow);
+            padding: 15px;
+            text-align: right;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .btn-print {
+            background: var(--taxi-yellow);
+            color: black;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.2s;
+        }
+
+        .btn-print:hover {
+            background: #e6b800;
+        }
+
+        @media print {
+            .no-print { display: none; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; max-width: 100%; }
+            #invoice { margin: 0; padding: 20px; }
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar no-print">
+        <div class="user-tag">PROJEKT VON AGRARJULIAN</div>
+        <h1>TaxiRechner Köln</h1>
+    </div>
+
+    <div class="content">
+        <div class="no-print">
+            <div class="grid">
+                <div class="input-group">
+                    <label>Fahrzeugmodell</label>
+                    <select id="car" onchange="calc()">
+                        <option value="s-klasse">Extended S-Klasse</option>
+                        <option value="stretch">Stretch-Limousine</option>
+                        <option value="patriot">Patriot Limousine</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Fahrt-Typ</label>
+                    <select id="type" onchange="calc()">
+                        <option value="0">Einfache Fahrt</option>
+                        <option value="1">Hin- und Rückfahrt</option>
+                        <option value="2">1 Stunde exklusiv</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label>Extra Zeit (alle 15 Min)</label>
+                    <input type="number" id="time" value="0" min="0" oninput="calc()">
+                </div>
+                <div class="input-group">
+                    <label>Zusatz-Stopps (ab 4. Ziel)</label>
+                    <input type="number" id="stops" value="0" min="0" oninput="calc()">
+                </div>
+            </div>
+
+            <label>Zusatzoptionen</label>
+            <div class="checkbox-container">
+                <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet (Pauschal)</label>
+                <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (unter 3 Std. Vorlauf)</label>
+                <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
+            </div>
+
+            <button class="btn-print" onclick="window.print()">RECHNUNG DRUCKEN</button>
+        </div>
+
+        <div id="invoice">
+            <div class="invoice-head">
+                <div>
+                    <strong style="font-size: 20px;">TaxiRechner</strong><br>
+                    Chauffeur- & Limousinenservice<br>
+                    <small>Erstellt von AgrarJulian</small>
+                </div>
+                <div style="text-align: right;">
+                    <strong style="font-size: 22px;">RECHNUNG</strong><br>
+                    Datum: <span id="date">--.--.----</span>
+                </div>
+            </div>
+
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Leistung</th>
+                        <th style="text-align: right;">Preis</th>
+                    </tr>
+                </thead>
+                <tbody id="items">
+                    </tbody>
+            </table>
+
+            <div class="total-box">
+                GESAMTBETRAG: <span id="total">0</span> EUR
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const data = {
+        's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
+        'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
+        'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
+    };
+
+    function calc() {
+        const carKey = document.getElementById('car').value;
+        const typeIdx = document.getElementById('type').value;
+        const extraTime = parseInt(document.getElementById('time').value) || 0;
+        const extraStops = parseInt(document.getElementById('stops').value) || 0;
+        
+        const isOut = document.getElementById('outside').checked;
+        const isSpontan = document.getElementById('spontan').checked;
+        const isKol = document.getElementById('kolonne').checked;
+
+        const p = data[carKey];
+        let total = 0;
+        let html = '';
+
+        // Basis
+        const bPrice = p.base[typeIdx];
+        const carName = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
+        const typeName = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
+        total += bPrice;
+        html += `<tr><td>${carName} (${typeName})</td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
+
+        // Zeit
+        if(extraTime > 0) {
+            let cost = extraTime * p.time;
+            total += cost;
+            html += `<tr><td>Zusatzzeit (${extraTime} x 15 Min)</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+        }
+
+        // Stopps
+        if(extraStops > 0) {
+            let cost = extraStops * p.stop;
+            total += cost;
+            html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+        }
+
+        // Außerhalb
+        if(isOut) {
+            total += p.out;
+            html += `<tr><td>Außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
+        }
+
+        // Spontan (+25%)
+        if(isSpontan) {
+            let sur = Math.max(total * 0.25, p.minSpontan);
+            total += sur;
+            html += `<tr><td>Spontanbuchung Aufschlag</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+        }
+
+        // Kolonne (+20%)
+        if(isKol) {
+            let sur = Math.max(total * 0.20, p.minKol);
+            total += sur;
+            html += `<tr><td>Kolonnenfahrt Aufschlag</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+        }
+
+        document.getElementById('items').innerHTML = html;
+        document.getElementById('total').innerText = total.toLocaleString();
+        document.getElementById('date').innerText = new Date().toLocaleDateString('de-DE');
+    }
+
+    // Start
+    calc();
+</script>
+
+</body>
+</html>
