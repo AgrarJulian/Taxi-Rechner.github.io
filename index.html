@@ -42,33 +42,39 @@
             border: 1px solid #333;
         }
 
+        /* Angepasster Header für das volle Banner-Bild */
         .header-bar {
             background-color: var(--taxi-yellow);
             color: var(--text-dark);
-            padding: 25px;
+            /* Kein padding oben/unten, damit das Bild den Rand berührt */
+            padding: 0; 
             text-align: center;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            /* Ermöglicht, dass das Bild über den Rand geht, falls gewünscht */
+            overflow: visible; 
         }
 
         .logo-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 15px;
-            border: 3px solid var(--taxi-black);
-            background-color: white;
+            /* Das Bild füllt die Breite des Headers aus */
+            width: 100%; 
+            /* WICHTIG: Die Höhe passt sich automatisch an das Originalbild an */
+            height: auto; 
+            /* Verhindert das Bescheiden des Kreises */
+            border-radius: 0; 
+            /* Verhindert Verzerrung */
+            object-fit: cover; 
+            margin: 0;
+            /* Entfernt die Ränder, die wir vorher hatten */
+            border: none; 
+            background-color: transparent; 
         }
 
+        /* Da das Banner-Bild nun den Text "Taxi Köln" enthält, 
+           blenden wir die HTML-Überschrift <h1> hier aus */
         .header-bar h1 {
-            margin: 0;
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 900;
+            display: none;
         }
 
         .content {
@@ -243,8 +249,8 @@
 <div class="main-content">
     <div class="container">
         <div class="header-bar no-print">
-            <img src="images/logo.png" alt="Taxi Köln Logo" class="logo-image">
-            <h1>TaxiRechner Köln</h1>
+            <img src="images/logo.png" alt="Taxi Köln Banner" class="logo-image">
+            <h1>TaxiRechner Köln</h1> 
         </div>
 
         <div class="content">
