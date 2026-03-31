@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaxiRechner | AgrarJulian</title>
+    <title>TaxiRechner | Taxi Köln</title>
     <style>
         :root {
             --taxi-yellow: #ffcc00;
             --taxi-black: #121212;
             --taxi-dark-gray: #1e1e1e;
+            --taxi-deep-black: #000000;
             --text-light: #ffffff;
             --text-dark: #000000;
         }
@@ -19,9 +20,17 @@
             color: var(--text-light);
             margin: 0;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Mindesthöhe für den Footer */
+            padding-bottom: 120px; /* Platz für den Feedback-Button */
+        }
+
+        /* Container für den Hauptinhalt */
+        .main-content {
+            display: flex;
             justify-content: center;
             padding: 20px;
-            padding-bottom: 80px;
+            flex-grow: 1; /* Füllt den Raum bis zum Footer */
         }
 
         .container {
@@ -34,19 +43,24 @@
             border: 1px solid #333;
         }
 
-        /* Header mit der "1" (Logo-Ersatz) */
+        /* Header mit nur dem Logo-Kreis */
         .header-bar {
             background-color: var(--taxi-yellow);
             color: var(--text-dark);
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .logo-icon {
-            font-size: 40px;
-            display: block;
-            margin-bottom: 5px;
+        .logo-image {
+            width: 100px; /* Größe des Logo-Kreises */
+            height: 100px;
+            border-radius: 50%; /* Stellt sicher, dass es ein Kreis ist */
+            object-fit: contain; /* Behält das Seitenverhältnis des Bildes bei */
+            margin-bottom: 10px;
+            border: 2px solid var(--text-dark); /* Optional: Umrandung */
         }
 
         .header-bar h1 {
@@ -57,22 +71,27 @@
             font-weight: 900;
         }
 
-        .user-tag {
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: rgba(0,0,0,0.1);
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-        }
-
         .content {
             padding: 30px;
         }
 
+        /* Footer (Unten) */
+        .footer-bar {
+            background-color: var(--taxi-deep-black);
+            color: var(--taxi-yellow);
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            box-sizing: border-box;
+        }
+
+        /* (Restliches CSS unverändert) */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -211,7 +230,7 @@
         }
 
         @media print {
-            .no-print, .feedback-btn { display: none !important; }
+            .no-print, .feedback-btn, .footer-bar { display: none !important; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; }
             #invoice { margin: 0; border: 1px solid #eee; }
@@ -224,84 +243,88 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="header-bar no-print">
-        <span class="logo-icon">🚖</span>
-        <div class="user-tag">AgrarJulian Edition</div>
-        <h1>TaxiRechner Köln</h1>
-    </div>
-
-    <div class="content">
-        <div class="no-print">
-            <div class="grid">
-                <div class="input-group">
-                    <label>Fahrzeugmodell</label>
-                    <select id="car" onchange="calc()">
-                        <option value="s-klasse">Extended S-Klasse</option>
-                        <option value="stretch">Stretch-Limousine</option>
-                        <option value="patriot">Patriot Limousine</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Fahrt-Modus</label>
-                    <select id="type" onchange="calc()">
-                        <option value="0">Einfache Fahrt</option>
-                        <option value="1">Hin- und Rückfahrt</option>
-                        <option value="2">1 Stunde exklusiv</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="input-group">
-                    <label>Zusatzzeit (Einheit: 15 Min)</label>
-                    <input type="number" id="time" value="0" min="0" oninput="calc()">
-                </div>
-                <div class="input-group">
-                    <label>Zusatz-Stopps (ab 4. Ziel)</label>
-                    <input type="number" id="stops" value="0" min="0" oninput="calc()">
-                </div>
-            </div>
-
-            <label>Zusatzoptionen & Aufschläge</label>
-            <div class="checkbox-container">
-                <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet (Pauschal)</label>
-                <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std. Vorlauf)</label>
-                <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
-            </div>
-
-            <button class="btn-print" onclick="window.print()">Rechnung erstellen & Drucken</button>
+<div class="main-content">
+    <div class="container">
+        <div class="header-bar no-print">
+            <img src="logo.png" alt="Taxi Köln Logo" class="logo-image">
+            <h1>TaxiRechner Köln</h1>
         </div>
 
-        <div id="invoice">
-            <div class="invoice-head">
-                <div>
-                    <strong style="font-size: 22px;">TaxiRechner Köln</strong><br>
-                    Chauffeur- & Limousinenservice<br>
-                    <small>System bereitgestellt von AgrarJulian</small>
+        <div class="content">
+            <div class="no-print">
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Fahrzeugmodell</label>
+                        <select id="car" onchange="calc()">
+                            <option value="s-klasse">Extended S-Klasse</option>
+                            <option value="stretch">Stretch-Limousine</option>
+                            <option value="patriot">Patriot Limousine</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Fahrt-Modus</label>
+                        <select id="type" onchange="calc()">
+                            <option value="0">Einfache Fahrt</option>
+                            <option value="1">Hin- und Rückfahrt</option>
+                            <option value="2">1 Stunde exklusiv</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                    <strong style="font-size: 24px;">RECHNUNG</strong><br>
-                    Datum: <span id="date">--.--.----</span>
+
+                <div class="grid">
+                    <div class="input-group">
+                        <label>Zusatzzeit (Einheit: 15 Min)</label>
+                        <input type="number" id="time" value="0" min="0" oninput="calc()">
+                    </div>
+                    <div class="input-group">
+                        <label>Zusatz-Stopps (ab 4. Ziel)</label>
+                        <input type="number" id="stops" value="0" min="0" oninput="calc()">
+                    </div>
                 </div>
+
+                <label>Zusatzoptionen & Aufschläge</label>
+                <div class="checkbox-container">
+                    <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet (Pauschal)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std. Vorlauf)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
+                </div>
+
+                <button class="btn-print" onclick="window.print()">Rechnung erstellen & Drucken</button>
             </div>
 
-            <table class="invoice-table">
-                <thead>
-                    <tr>
-                        <th>Position / Leistung</th>
-                        <th style="text-align: right;">Einzelpreis</th>
-                    </tr>
-                </thead>
-                <tbody id="items">
-                    </tbody>
-            </table>
+            <div id="invoice">
+                <div class="invoice-head">
+                    <div>
+                        <strong style="font-size: 22px;">TaxiRechner Köln</strong><br>
+                        Chauffeur- & Limousinenservice
+                    </div>
+                    <div style="text-align: right;">
+                        <strong style="font-size: 24px;">RECHNUNG</strong><br>
+                        Datum: <span id="date">--.--.----</span>
+                    </div>
+                </div>
 
-            <div class="total-box">
-                GESAMTSUMME: <span id="total">0</span> EUR
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Position / Leistung</th>
+                            <th style="text-align: right;">Einzelpreis</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items">
+                        </tbody>
+                </table>
+
+                <div class="total-box">
+                    GESAMTSUMME: <span id="total">0</span> EUR
+                </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="footer-bar no-print">
+    C-Agrar.Julian Taxi Köln NRW RP
 </div>
 
 <a href="https://github.com/AgrarJulian/agrarjulian.github.io/issues/new" 
