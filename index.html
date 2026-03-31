@@ -21,6 +21,7 @@
             display: flex;
             justify-content: center;
             padding: 20px;
+            padding-bottom: 80px;
         }
 
         .container {
@@ -33,12 +34,19 @@
             border: 1px solid #333;
         }
 
-        /* Header Bereich */
+        /* Header mit der "1" (Logo-Ersatz) */
         .header-bar {
             background-color: var(--taxi-yellow);
             color: var(--text-dark);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 5px;
         }
 
         .header-bar h1 {
@@ -46,12 +54,19 @@
             font-size: 28px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-weight: 900;
         }
 
         .user-tag {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
-            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.1);
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
         }
 
         .content {
@@ -93,13 +108,14 @@
             border-radius: 8px;
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
             cursor: pointer;
+            font-size: 15px;
         }
 
         .checkbox-item input {
@@ -107,20 +123,19 @@
             margin-right: 12px;
         }
 
-        /* RECHNUNGS-VORSCHAU */
+        /* RECHNUNG */
         #invoice {
             margin-top: 30px;
             background: white;
             color: black;
             padding: 40px;
             border-radius: 4px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
 
         .invoice-head {
             display: flex;
             justify-content: space-between;
-            border-bottom: 3px solid var(--taxi-yellow);
+            border-bottom: 4px solid var(--taxi-yellow);
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
@@ -132,47 +147,74 @@
 
         .invoice-table th {
             text-align: left;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #ddd;
             padding: 10px;
         }
 
         .invoice-table td {
-            padding: 10px;
-            border-bottom: 1px solid #f4f4f4;
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
         }
 
         .total-box {
-            margin-top: 20px;
+            margin-top: 25px;
             background: var(--taxi-yellow);
             padding: 15px;
             text-align: right;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
+            border-radius: 4px;
         }
 
         .btn-print {
             background: var(--taxi-yellow);
             color: black;
             border: none;
-            padding: 15px;
+            padding: 18px;
             width: 100%;
             font-weight: bold;
             font-size: 18px;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 20px;
-            transition: 0.2s;
+            margin-top: 25px;
+            transition: 0.3s;
+            text-transform: uppercase;
         }
 
         .btn-print:hover {
-            background: #e6b800;
+            background: #ffffff;
+            box-shadow: 0 0 15px var(--taxi-yellow);
+        }
+
+        /* Feedback Button */
+        .feedback-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background-color: var(--taxi-yellow);
+            color: black;
+            padding: 14px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .feedback-btn:hover {
+            transform: translateY(-5px);
+            background-color: #fff;
         }
 
         @media print {
-            .no-print { display: none; }
+            .no-print, .feedback-btn { display: none !important; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; }
-            #invoice { margin: 0; padding: 20px; }
+            #invoice { margin: 0; border: 1px solid #eee; }
         }
 
         @media (max-width: 600px) {
@@ -184,7 +226,8 @@
 
 <div class="container">
     <div class="header-bar no-print">
-        <div class="user-tag">PROJEKT VON AGRARJULIAN</div>
+        <span class="logo-icon">🚖</span>
+        <div class="user-tag">AgrarJulian Edition</div>
         <h1>TaxiRechner Köln</h1>
     </div>
 
@@ -200,7 +243,7 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Fahrt-Typ</label>
+                    <label>Fahrt-Modus</label>
                     <select id="type" onchange="calc()">
                         <option value="0">Einfache Fahrt</option>
                         <option value="1">Hin- und Rückfahrt</option>
@@ -211,7 +254,7 @@
 
             <div class="grid">
                 <div class="input-group">
-                    <label>Extra Zeit (alle 15 Min)</label>
+                    <label>Zusatzzeit (Einheit: 15 Min)</label>
                     <input type="number" id="time" value="0" min="0" oninput="calc()">
                 </div>
                 <div class="input-group">
@@ -220,25 +263,25 @@
                 </div>
             </div>
 
-            <label>Zusatzoptionen</label>
+            <label>Zusatzoptionen & Aufschläge</label>
             <div class="checkbox-container">
                 <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet (Pauschal)</label>
-                <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (unter 3 Std. Vorlauf)</label>
+                <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std. Vorlauf)</label>
                 <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
             </div>
 
-            <button class="btn-print" onclick="window.print()">RECHNUNG DRUCKEN</button>
+            <button class="btn-print" onclick="window.print()">Rechnung erstellen & Drucken</button>
         </div>
 
         <div id="invoice">
             <div class="invoice-head">
                 <div>
-                    <strong style="font-size: 20px;">TaxiRechner</strong><br>
+                    <strong style="font-size: 22px;">TaxiRechner Köln</strong><br>
                     Chauffeur- & Limousinenservice<br>
-                    <small>Erstellt von AgrarJulian</small>
+                    <small>System bereitgestellt von AgrarJulian</small>
                 </div>
                 <div style="text-align: right;">
-                    <strong style="font-size: 22px;">RECHNUNG</strong><br>
+                    <strong style="font-size: 24px;">RECHNUNG</strong><br>
                     Datum: <span id="date">--.--.----</span>
                 </div>
             </div>
@@ -246,8 +289,8 @@
             <table class="invoice-table">
                 <thead>
                     <tr>
-                        <th>Leistung</th>
-                        <th style="text-align: right;">Preis</th>
+                        <th>Position / Leistung</th>
+                        <th style="text-align: right;">Einzelpreis</th>
                     </tr>
                 </thead>
                 <tbody id="items">
@@ -255,14 +298,20 @@
             </table>
 
             <div class="total-box">
-                GESAMTBETRAG: <span id="total">0</span> EUR
+                GESAMTSUMME: <span id="total">0</span> EUR
             </div>
         </div>
     </div>
 </div>
 
+<a href="https://github.com/AgrarJulian/agrarjulian.github.io/issues/new" 
+   target="_blank" 
+   class="feedback-btn no-print">
+    <span>📢</span> Feedback & Hilfe
+</a>
+
 <script>
-    const data = {
+    const config = {
         's-klasse': { base: [12000, 22000, 30000], time: 8000, stop: 3000, out: 10000, minSpontan: 8000, minKol: 10000 },
         'stretch':  { base: [22000, 40000, 50000], time: 12000, stop: 5000, out: 15000, minSpontan: 12000, minKol: 15000 },
         'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
@@ -278,57 +327,58 @@
         const isSpontan = document.getElementById('spontan').checked;
         const isKol = document.getElementById('kolonne').checked;
 
-        const p = data[carKey];
+        const p = config[carKey];
         let total = 0;
         let html = '';
 
-        // Basis
+        // 1. Basispreis
         const bPrice = p.base[typeIdx];
-        const carName = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
-        const typeName = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
+        const carLabel = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
+        const typeLabel = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
         total += bPrice;
-        html += `<tr><td>${carName} (${typeName})</td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
+        html += `<tr><td><strong>Grundpreis:</strong> ${carLabel} (${typeLabel})</td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
 
-        // Zeit
+        // 2. Extra Zeit
         if(extraTime > 0) {
             let cost = extraTime * p.time;
             total += cost;
             html += `<tr><td>Zusatzzeit (${extraTime} x 15 Min)</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
-        // Stopps
+        // 3. Stopps
         if(extraStops > 0) {
             let cost = extraStops * p.stop;
             total += cost;
             html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
-        // Außerhalb
+        // 4. Außerhalb
         if(isOut) {
             total += p.out;
-            html += `<tr><td>Außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Pauschale außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
         }
 
-        // Spontan (+25%)
+        // 5. Spontan (+25%)
         if(isSpontan) {
             let sur = Math.max(total * 0.25, p.minSpontan);
             total += sur;
-            html += `<tr><td>Spontanbuchung Aufschlag</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Aufschlag Spontanbuchung</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
-        // Kolonne (+20%)
+        // 6. Kolonne (+20%)
         if(isKol) {
             let sur = Math.max(total * 0.20, p.minKol);
             total += sur;
-            html += `<tr><td>Kolonnenfahrt Aufschlag</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Aufschlag Kolonnenfahrt</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
+        // Anzeige aktualisieren
         document.getElementById('items').innerHTML = html;
         document.getElementById('total').innerText = total.toLocaleString();
         document.getElementById('date').innerText = new Date().toLocaleDateString('de-DE');
     }
 
-    // Start
+    // Initialer Aufruf
     calc();
 </script>
 
