@@ -21,16 +21,15 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Mindesthöhe für den Footer */
-            padding-bottom: 120px; /* Platz für den Feedback-Button */
+            min-height: 100vh;
+            padding-bottom: 150px;
         }
 
-        /* Container für den Hauptinhalt */
         .main-content {
             display: flex;
             justify-content: center;
             padding: 20px;
-            flex-grow: 1; /* Füllt den Raum bis zum Footer */
+            flex-grow: 1;
         }
 
         .container {
@@ -43,24 +42,25 @@
             border: 1px solid #333;
         }
 
-        /* Header mit nur dem Logo-Kreis */
         .header-bar {
             background-color: var(--taxi-yellow);
             color: var(--text-dark);
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .logo-image {
-            width: 100px; /* Größe des Logo-Kreises */
-            height: 100px;
-            border-radius: 50%; /* Stellt sicher, dass es ein Kreis ist */
-            object-fit: contain; /* Behält das Seitenverhältnis des Bildes bei */
-            margin-bottom: 10px;
-            border: 2px solid var(--text-dark); /* Optional: Umrandung */
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--taxi-black);
+            background-color: white;
         }
 
         .header-bar h1 {
@@ -75,7 +75,6 @@
             padding: 30px;
         }
 
-        /* Footer (Unten) */
         .footer-bar {
             background-color: var(--taxi-deep-black);
             color: var(--taxi-yellow);
@@ -89,9 +88,9 @@
             position: absolute;
             bottom: 0;
             box-sizing: border-box;
+            z-index: 50;
         }
 
-        /* (Restliches CSS unverändert) */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -142,7 +141,6 @@
             margin-right: 12px;
         }
 
-        /* RECHNUNG */
         #invoice {
             margin-top: 30px;
             background: white;
@@ -205,7 +203,6 @@
             box-shadow: 0 0 15px var(--taxi-yellow);
         }
 
-        /* Feedback Button */
         .feedback-btn {
             position: fixed;
             bottom: 25px;
@@ -246,7 +243,7 @@
 <div class="main-content">
     <div class="container">
         <div class="header-bar no-print">
-            <img src="logo.png" alt="Taxi Köln Logo" class="logo-image">
+            <img src="images/logo.png" alt="Taxi Köln Logo" class="logo-image">
             <h1>TaxiRechner Köln</h1>
         </div>
 
@@ -311,8 +308,7 @@
                             <th style="text-align: right;">Einzelpreis</th>
                         </tr>
                     </thead>
-                    <tbody id="items">
-                        </tbody>
+                    <tbody id="items"></tbody>
                 </table>
 
                 <div class="total-box">
@@ -354,54 +350,46 @@
         let total = 0;
         let html = '';
 
-        // 1. Basispreis
         const bPrice = p.base[typeIdx];
         const carLabel = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
         const typeLabel = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
         total += bPrice;
         html += `<tr><td><strong>Grundpreis:</strong> ${carLabel} (${typeLabel})</td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
 
-        // 2. Extra Zeit
         if(extraTime > 0) {
             let cost = extraTime * p.time;
             total += cost;
             html += `<tr><td>Zusatzzeit (${extraTime} x 15 Min)</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
-        // 3. Stopps
         if(extraStops > 0) {
             let cost = extraStops * p.stop;
             total += cost;
             html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
-        // 4. Außerhalb
         if(isOut) {
             total += p.out;
             html += `<tr><td>Pauschale außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
         }
 
-        // 5. Spontan (+25%)
         if(isSpontan) {
             let sur = Math.max(total * 0.25, p.minSpontan);
             total += sur;
             html += `<tr><td>Aufschlag Spontanbuchung</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
-        // 6. Kolonne (+20%)
         if(isKol) {
             let sur = Math.max(total * 0.20, p.minKol);
             total += sur;
             html += `<tr><td>Aufschlag Kolonnenfahrt</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
-        // Anzeige aktualisieren
         document.getElementById('items').innerHTML = html;
         document.getElementById('total').innerText = total.toLocaleString();
         document.getElementById('date').innerText = new Date().toLocaleDateString('de-DE');
     }
 
-    // Initialer Aufruf
     calc();
 </script>
 
