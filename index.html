@@ -12,17 +12,18 @@
             --taxi-deep-black: #000000;
             --text-light: #ffffff;
             --text-dark: #000000;
+            --accent-gray: #f4f4f4;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--taxi-black);
             color: var(--text-light);
             margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding-bottom: 150px;
+            padding-bottom: 50px;
         }
 
         .main-content {
@@ -42,37 +43,21 @@
             border: 1px solid #333;
         }
 
-        /* Angepasster Header für das volle Banner-Bild */
         .header-bar {
             background-color: var(--taxi-yellow);
             color: var(--text-dark);
-            /* Kein padding oben/unten, damit das Bild den Rand berührt */
             padding: 0; 
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Ermöglicht, dass das Bild über den Rand geht, falls gewünscht */
-            overflow: visible; 
+            overflow: hidden; 
         }
 
         .logo-image {
-            /* Das Bild füllt die Breite des Headers aus */
             width: 100%; 
-            /* WICHTIG: Die Höhe passt sich automatisch an das Originalbild an */
             height: auto; 
-            /* Verhindert das Bescheiden des Kreises */
-            border-radius: 0; 
-            /* Verhindert Verzerrung */
+            display: block;
             object-fit: cover; 
-            margin: 0;
-            /* Entfernt die Ränder, die wir vorher hatten */
-            border: none; 
-            background-color: transparent; 
         }
 
-        /* Da das Banner-Bild nun den Text "Taxi Köln" enthält, 
-           blenden wir die HTML-Überschrift <h1> hier aus */
         .header-bar h1 {
             display: none;
         }
@@ -81,22 +66,7 @@
             padding: 30px;
         }
 
-        .footer-bar {
-            background-color: var(--taxi-deep-black);
-            color: var(--taxi-yellow);
-            padding: 15px 30px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            box-sizing: border-box;
-            z-index: 50;
-        }
-
+        /* Formular Styling */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -133,6 +103,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 12px;
+            margin-bottom: 20px;
         }
 
         .checkbox-item {
@@ -147,48 +118,93 @@
             margin-right: 12px;
         }
 
+        /* --- VERBESSERTE RECHNUNG --- */
         #invoice {
-            margin-top: 30px;
+            margin-top: 40px;
             background: white;
-            color: black;
-            padding: 40px;
-            border-radius: 4px;
+            color: #333;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
 
         .invoice-head {
             display: flex;
             justify-content: space-between;
-            border-bottom: 4px solid var(--taxi-yellow);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .invoice-brand {
+            color: var(--taxi-deep-black);
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h2 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: #000;
         }
 
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 30px;
         }
 
         .invoice-table th {
             text-align: left;
+            background-color: var(--accent-gray);
+            padding: 12px;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #666;
             border-bottom: 2px solid #ddd;
-            padding: 10px;
         }
 
         .invoice-table td {
-            padding: 12px 10px;
+            padding: 15px 12px;
             border-bottom: 1px solid #eee;
+            font-size: 15px;
+        }
+
+        .invoice-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 2px solid #000;
+            padding-top: 20px;
         }
 
         .total-box {
-            margin-top: 25px;
-            background: var(--taxi-yellow);
-            padding: 15px;
             text-align: right;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 4px;
+            min-width: 200px;
         }
 
+        .total-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #000;
+            display: block;
+        }
+
+        /* Buttons & Footer */
         .btn-print {
             background: var(--taxi-yellow);
             color: black;
@@ -209,38 +225,27 @@
             box-shadow: 0 0 15px var(--taxi-yellow);
         }
 
-        .feedback-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background-color: var(--taxi-yellow);
-            color: black;
-            padding: 14px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-        }
-
-        .feedback-btn:hover {
-            transform: translateY(-5px);
-            background-color: #fff;
+        .footer-bar {
+            background-color: var(--taxi-deep-black);
+            color: #555;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         @media print {
-            .no-print, .feedback-btn, .footer-bar { display: none !important; }
+            .no-print, .footer-bar { display: none !important; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; border: none; max-width: 100%; }
-            #invoice { margin: 0; border: 1px solid #eee; }
+            #invoice { margin: 0; padding: 0; box-shadow: none; }
+            .main-content { padding: 0; }
         }
 
         @media (max-width: 600px) {
             .grid { grid-template-columns: 1fr; }
+            #invoice { padding: 20px; }
         }
     </style>
 </head>
@@ -250,7 +255,6 @@
     <div class="container">
         <div class="header-bar no-print">
             <img src="images/logo.png" alt="Taxi Köln Banner" class="logo-image">
-            <h1>TaxiRechner Köln</h1> 
         </div>
 
         <div class="content">
@@ -292,48 +296,49 @@
                     <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
                 </div>
 
-                <button class="btn-print" onclick="window.print()">Rechnung erstellen & Drucken</button>
+                <button class="btn-print" onclick="window.print()">Rechnung drucken</button>
             </div>
 
             <div id="invoice">
                 <div class="invoice-head">
-                    <div>
-                        <strong style="font-size: 22px;">TaxiRechner Köln</strong><br>
-                        Chauffeur- & Limousinenservice
+                    <div class="invoice-brand">
+                        <strong style="font-size: 20px; color: #000;">Taxi Köln</strong><br>
+                        <span style="font-size: 13px; color: #666;">Chauffeur- & Limousinenservice</span>
                     </div>
-                    <div style="text-align: right;">
-                        <strong style="font-size: 24px;">RECHNUNG</strong><br>
-                        Datum: <span id="date">--.--.----</span>
+                    <div class="invoice-title">
+                        <h2>RECHNUNG</h2>
+                        <span style="font-size: 13px; color: #666;">Datum: <span id="date">--.--.----</span></span>
                     </div>
                 </div>
 
                 <table class="invoice-table">
                     <thead>
                         <tr>
-                            <th>Position / Leistung</th>
-                            <th style="text-align: right;">Einzelpreis</th>
+                            <th>Beschreibung der Leistung</th>
+                            <th style="text-align: right;">Betrag</th>
                         </tr>
                     </thead>
                     <tbody id="items"></tbody>
                 </table>
 
-                <div class="total-box">
-                    GESAMTSUMME: <span id="total">0</span> EUR
+                <div class="total-section">
+                    <div class="total-box">
+                        <span class="total-label">Gesamtbetrag</span>
+                        <span class="total-amount"><span id="total">0</span> EUR</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 50px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
+                    Vielen Dank für Ihren Auftrag. Der Betrag ist nach Erhalt der Rechnung fällig.
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="footer-bar no-print">
-    C-Agrar.Julian Taxi Köln NRW RP
-</div>
-
-<a href="https://github.com/AgrarJulian/agrarjulian.github.io/issues/new" 
-   target="_blank" 
-   class="feedback-btn no-print">
-    <span>📢</span> Feedback & Hilfe
-</a>
+<footer class="footer-bar no-print">
+    &copy; 2024 Taxi Köln NRW. Alle Rechte vorbehalten.
+</footer>
 
 <script>
     const config = {
@@ -359,8 +364,9 @@
         const bPrice = p.base[typeIdx];
         const carLabel = document.getElementById('car').options[document.getElementById('car').selectedIndex].text;
         const typeLabel = document.getElementById('type').options[document.getElementById('type').selectedIndex].text;
+        
         total += bPrice;
-        html += `<tr><td><strong>Grundpreis:</strong> ${carLabel} (${typeLabel})</td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
+        html += `<tr><td><strong>Grundpauschale</strong><br><small>${carLabel} | ${typeLabel}</small></td><td style="text-align: right;">${bPrice.toLocaleString()} EUR</td></tr>`;
 
         if(extraTime > 0) {
             let cost = extraTime * p.time;
@@ -371,24 +377,24 @@
         if(extraStops > 0) {
             let cost = extraStops * p.stop;
             total += cost;
-            html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Zusätzliche Zwischenstopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
         if(isOut) {
             total += p.out;
-            html += `<tr><td>Pauschale außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Anfahrtspauschale (außerhalb Kerngebiet)</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
         }
 
         if(isSpontan) {
             let sur = Math.max(total * 0.25, p.minSpontan);
             total += sur;
-            html += `<tr><td>Aufschlag Spontanbuchung</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Servicegebühr Spontanbuchung</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
         if(isKol) {
             let sur = Math.max(total * 0.20, p.minKol);
             total += sur;
-            html += `<tr><td>Aufschlag Kolonnenfahrt</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Aufschlag Kolonnenfahrt / Begleitfahrzeuge</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
         document.getElementById('items').innerHTML = html;
