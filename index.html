@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaxiRechner | Taxi Köln</title>
+    
+    <link rel="icon" type="image/png" href="images/bild.png">
+
     <style>
         :root {
             --taxi-yellow: #ffcc00;
@@ -45,28 +48,20 @@
 
         .header-bar {
             background-color: var(--taxi-yellow);
-            color: var(--text-dark);
             padding: 0; 
             text-align: center;
-            overflow: hidden; 
         }
 
         .logo-image {
             width: 100%; 
             height: auto; 
             display: block;
-            object-fit: cover; 
-        }
-
-        .header-bar h1 {
-            display: none;
         }
 
         .content {
             padding: 30px;
         }
 
-        /* Formular Styling */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -96,6 +91,12 @@
             box-sizing: border-box;
         }
 
+        /* Spezial-Style für das Namensfeld */
+        .name-input {
+            border: 2px solid var(--taxi-yellow);
+            margin-bottom: 20px;
+        }
+
         .checkbox-container {
             background: #2a2a2a;
             padding: 15px;
@@ -118,7 +119,7 @@
             margin-right: 12px;
         }
 
-        /* --- VERBESSERTE RECHNUNG --- */
+        /* RECHNUNG DESIGN */
         #invoice {
             margin-top: 40px;
             background: white;
@@ -126,30 +127,19 @@
             padding: 50px;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
         }
 
         .invoice-head {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
             border-bottom: 2px solid #eee;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
-        .invoice-brand {
-            color: var(--taxi-deep-black);
-        }
-
-        .invoice-title {
-            text-align: right;
-        }
-
         .invoice-title h2 {
             margin: 0;
             font-size: 28px;
-            letter-spacing: 2px;
             color: #000;
         }
 
@@ -163,20 +153,12 @@
             text-align: left;
             background-color: var(--accent-gray);
             padding: 12px;
-            font-size: 13px;
-            text-transform: uppercase;
-            color: #666;
             border-bottom: 2px solid #ddd;
         }
 
         .invoice-table td {
             padding: 15px 12px;
             border-bottom: 1px solid #eee;
-            font-size: 15px;
-        }
-
-        .invoice-table tr:last-child td {
-            border-bottom: none;
         }
 
         .total-section {
@@ -186,25 +168,21 @@
             padding-top: 20px;
         }
 
-        .total-box {
-            text-align: right;
-            min-width: 200px;
-        }
-
-        .total-label {
-            font-size: 14px;
-            text-transform: uppercase;
-            color: #888;
-        }
-
         .total-amount {
             font-size: 32px;
             font-weight: 800;
             color: #000;
-            display: block;
         }
 
-        /* Buttons & Footer */
+        .processed-by {
+            margin-top: 30px;
+            font-style: italic;
+            font-size: 14px;
+            color: #555;
+            border-left: 3px solid var(--taxi-yellow);
+            padding-left: 10px;
+        }
+
         .btn-print {
             background: var(--taxi-yellow);
             color: black;
@@ -215,14 +193,13 @@
             font-size: 18px;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 25px;
-            transition: 0.3s;
             text-transform: uppercase;
         }
 
-        .btn-print:hover {
-            background: #ffffff;
-            box-shadow: 0 0 15px var(--taxi-yellow);
+        .btn-print:disabled {
+            background: #555;
+            cursor: not-allowed;
+            color: #999;
         }
 
         .footer-bar {
@@ -231,21 +208,13 @@
             padding: 20px;
             text-align: center;
             font-size: 12px;
-            width: 100%;
-            box-sizing: border-box;
         }
 
         @media print {
             .no-print, .footer-bar { display: none !important; }
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; max-width: 100%; }
-            #invoice { margin: 0; padding: 0; box-shadow: none; }
-            .main-content { padding: 0; }
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            #invoice { padding: 20px; }
+            body { background: white; }
+            .container { box-shadow: none; border: none; }
+            #invoice { margin: 0; padding: 20px; }
         }
     </style>
 </head>
@@ -259,6 +228,11 @@
 
         <div class="content">
             <div class="no-print">
+                <div class="input-group">
+                    <label for="userName">Dein Name (Erforderlich für Rechnung)</label>
+                    <input type="text" id="userName" class="name-input" placeholder="Vorname Nachname" oninput="checkName()">
+                </div>
+
                 <div class="grid">
                     <div class="input-group">
                         <label>Fahrzeugmodell</label>
@@ -289,32 +263,33 @@
                     </div>
                 </div>
 
-                <label>Zusatzoptionen & Aufschläge</label>
+                <label>Zusatzoptionen</label>
                 <div class="checkbox-container">
-                    <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet (Pauschal)</label>
-                    <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std. Vorlauf)</label>
-                    <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnen- / Formationsfahrt (+20%)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="outside" onchange="calc()"> Außerhalb Kerngebiet</label>
+                    <label class="checkbox-item"><input type="checkbox" id="spontan" onchange="calc()"> Spontanbuchung (&lt; 3 Std.)</label>
+                    <label class="checkbox-item"><input type="checkbox" id="kolonne" onchange="calc()"> Kolonnenfahrt (+20%)</label>
                 </div>
 
-                <button class="btn-print" onclick="window.print()">Rechnung drucken</button>
+                <button id="printBtn" class="btn-print" onclick="window.print()" disabled>Rechnung drucken</button>
+                <p id="nameWarning" style="color: #ff4444; font-size: 12px; margin-top: 5px;">Bitte Namen eingeben, um drucken zu können.</p>
             </div>
 
             <div id="invoice">
                 <div class="invoice-head">
-                    <div class="invoice-brand">
-                        <strong style="font-size: 20px; color: #000;">Taxi Köln</strong><br>
-                        <span style="font-size: 13px; color: #666;">Chauffeur- & Limousinenservice</span>
+                    <div>
+                        <strong style="font-size: 20px;">Taxi Köln</strong><br>
+                        <span>Chauffeur- & Limousinenservice</span>
                     </div>
-                    <div class="invoice-title">
-                        <h2>RECHNUNG</h2>
-                        <span style="font-size: 13px; color: #666;">Datum: <span id="date">--.--.----</span></span>
+                    <div style="text-align: right;">
+                        <h2 style="margin:0;">RECHNUNG</h2>
+                        <span>Datum: <span id="date">--.--.----</span></span>
                     </div>
                 </div>
 
                 <table class="invoice-table">
                     <thead>
                         <tr>
-                            <th>Beschreibung der Leistung</th>
+                            <th>Leistungsbeschreibung</th>
                             <th style="text-align: right;">Betrag</th>
                         </tr>
                     </thead>
@@ -322,14 +297,18 @@
                 </table>
 
                 <div class="total-section">
-                    <div class="total-box">
-                        <span class="total-label">Gesamtbetrag</span>
+                    <div style="text-align: right;">
+                        <span style="color: #888; text-transform: uppercase; font-size: 12px;">Gesamtbetrag</span><br>
                         <span class="total-amount"><span id="total">0</span> EUR</span>
                     </div>
                 </div>
+
+                <div id="processedArea" class="processed-by">
+                    Bearbeitet von: <span id="displayUserName">________________</span>
+                </div>
                 
-                <div style="margin-top: 50px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
-                    Vielen Dank für Ihren Auftrag. Der Betrag ist nach Erhalt der Rechnung fällig.
+                <div style="margin-top: 40px; font-size: 10px; color: #aaa; text-align: center;">
+                    Dies ist eine automatisch erstellte Rechnung des TaxiRechners Köln.
                 </div>
             </div>
         </div>
@@ -347,12 +326,28 @@
         'patriot':  { base: [35000, 50000, 60000], time: 15000, stop: 6000, out: 20000, minSpontan: 15000, minKol: 20000 }
     };
 
+    function checkName() {
+        const nameInput = document.getElementById('userName').value.trim();
+        const printBtn = document.getElementById('printBtn');
+        const nameWarning = document.getElementById('nameWarning');
+        const displayUserName = document.getElementById('displayUserName');
+
+        if (nameInput.length > 2) {
+            printBtn.disabled = false;
+            nameWarning.style.display = 'none';
+            displayUserName.innerText = nameInput;
+        } else {
+            printBtn.disabled = true;
+            nameWarning.style.display = 'block';
+            displayUserName.innerText = "________________";
+        }
+    }
+
     function calc() {
         const carKey = document.getElementById('car').value;
         const typeIdx = document.getElementById('type').value;
         const extraTime = parseInt(document.getElementById('time').value) || 0;
         const extraStops = parseInt(document.getElementById('stops').value) || 0;
-        
         const isOut = document.getElementById('outside').checked;
         const isSpontan = document.getElementById('spontan').checked;
         const isKol = document.getElementById('kolonne').checked;
@@ -377,12 +372,12 @@
         if(extraStops > 0) {
             let cost = extraStops * p.stop;
             total += cost;
-            html += `<tr><td>Zusätzliche Zwischenstopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Zusätzliche Stopps (${extraStops})</td><td style="text-align: right;">${cost.toLocaleString()} EUR</td></tr>`;
         }
 
         if(isOut) {
             total += p.out;
-            html += `<tr><td>Anfahrtspauschale (außerhalb Kerngebiet)</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Anfahrt außerhalb Kerngebiet</td><td style="text-align: right;">${p.out.toLocaleString()} EUR</td></tr>`;
         }
 
         if(isSpontan) {
@@ -394,7 +389,7 @@
         if(isKol) {
             let sur = Math.max(total * 0.20, p.minKol);
             total += sur;
-            html += `<tr><td>Aufschlag Kolonnenfahrt / Begleitfahrzeuge</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
+            html += `<tr><td>Aufschlag Kolonnenfahrt</td><td style="text-align: right;">${sur.toLocaleString()} EUR</td></tr>`;
         }
 
         document.getElementById('items').innerHTML = html;
